@@ -1,0 +1,33 @@
+password = new_password
+username = new_username
+
+# Define a quantidade mínima de caracteres para a senha
+MIN_PASSWORD_LENGTH = 8
+
+# Verifica se o nome de usuário já está em uso
+IF USER_EXISTS(username) THEN
+    RETURN Error("Já existe usuário com esse nome.")
+ENDIF
+
+# Verifica se a senha atende ao critério de comprimento
+IF LENGTH(password) < MIN_PASSWORD_LENGTH THEN
+    RETURN Error("A senha deve ter pelo menos 8 caracteres.")
+ENDIF
+
+# Permite qualquer caractere na senha
+# Verifica as credenciais, limitando tentativas inválidas
+attempts = 0
+MAX_ATTEMPTS = 3
+
+WHILE attempts < MAX_ATTEMPTS DO
+    IS_VALID = LOOKUP_CREDENTIALS_IN_DATABASE(username, password)
+    
+    IF NOT IS_VALID THEN
+        attempts = attempts + 1
+        IF attempts >= MAX_ATTEMPTS THEN
+            RETURN Error("Muitas tentativas inválidas. Tente novamente mais tarde.")
+        ELSE
+            RETURN Error("Usuário ou senha incorretos.")
+        ENDIF
+    ENDIF
+ENDWHILE
